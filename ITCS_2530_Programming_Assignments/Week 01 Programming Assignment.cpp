@@ -11,6 +11,7 @@ int main()
 	int setsOwned;
 	double hoursPerWeek;
 	double hoursPerYear;
+	int menuChoice;
 
 	// Prompt the user for their favorite LEGO theme or building style.
 	cout << "Welcome to the LEGO Builder Profile!" << endl;
@@ -59,7 +60,7 @@ int main()
 	reportFile << left << setw(40) << "Favorite LEGO Theme/Building Style" << right << setw(15) << favoriteTheme << endl;
 
 	reportFile << left << setw(40) << "Number of LEGO Sets Owned" << right << setw(15) << setsOwned << endl;
-	
+
 	//Format the output to display two decimal places
 	reportFile << fixed << setprecision(2);
 
@@ -71,6 +72,49 @@ int main()
 
 	// Close the report file.
 	reportFile.close();
+
+	// Display the user options table
+	cout << "==== LEGO Hobby Menu ====" << endl;
+	cout << "1. Where to find Your LEGO Hobby Profile" << endl;
+	cout << "2. What your building habits are!" << endl;
+	cout << "3. Thank you for using the LEGO Builder Profile!" << endl;
+	cout << "Please enter your choice (1, 2, or 3): ";
+	cin >> menuChoice;
+
+	// Switch statement to handle menu choices
+	switch (menuChoice)
+	{
+	case 1:
+		cout << "Your LEGO Profile has been saved to report.txt" << endl;
+		break;
+
+	case 2:
+		if (hoursPerWeek >= 5 && setsOwned >= 10)
+		{
+			cout << "You are a dedicated LEGO builder!" << endl;
+		}
+		else
+		{
+			cout << "You are a casual LEGO builder!" << endl;
+		}
+
+		if (hoursPerYear >= 260 && hoursPerWeek >= 5)
+		{
+			cout << "You spent a lot of time throughout the year building LEGO sets!" << endl;
+		}
+		else
+		{
+			cout << "You have plenty of room and time to grow your building time!" << endl;
+		}
+		break;
+
+	case 3:
+		cout << "Thank you for using the LEGO Builder Profile!" << endl;
+		break;
+
+	default:
+		cout << "Invalid choice. Please select 1, 2, or 3." << endl;
+	}
 
 	return 0;
 }
