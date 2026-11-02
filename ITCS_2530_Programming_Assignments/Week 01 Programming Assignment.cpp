@@ -12,6 +12,13 @@ int main()
 	double hoursPerWeek;
 	double hoursPerYear;
 	int menuChoice;
+	char addAnother;
+	string setName;
+	int setNumber;
+	double setPrice;
+	int totalSetsEntered = 0;
+	double totalCollectionValue = 0.0;
+	double averageSetPrice = 0.0;
 
 	// Prompt the user for their favorite LEGO theme or building style.
 	cout << "Welcome to the LEGO Builder Profile!" << endl;
@@ -22,22 +29,91 @@ int main()
 	cout << "How many LEGO sets do you currently own?" << endl;
 	cin >> setsOwned;
 
-	// Validate input for Sets Owned
-	if (setsOwned < 0)
+	// Input validation for the number of LEGO sets owned
+	while (setsOwned < 0)
 	{
 		cout << "Please enter a valid number of LEGO sets (0 or more)." << endl;
 		cin >> setsOwned;
 	}
+
 	// Prompt the user for the average number of hours they spend building LEGO sets per week.
 	cout << "On average, how many hours a week do you spend building LEGO sets?" << endl;
 	cin >> hoursPerWeek;
 
 	// Validate input for Hours Per Week
-	if (hoursPerWeek < 0)
+	while (hoursPerWeek < 0)
 	{
 		cout << "Please enter a valid number of Hours (0 or more)." << endl;
 		cin >> hoursPerWeek;
 	}
+
+	// Clear the input buffer before using getline for setName
+	cin.ignore(200, '\n');
+
+	// Loop to allow the user to enter multiple LEGO sets
+	do
+	{
+		cout << "Enter the name of a LEGO set you own: ";
+		getline(cin, setName);
+
+		cout << "Enter the set number for " << setName << ": ";
+		cin >> setNumber;
+
+		cout << "Enter the price of " << setName << ": $";
+		cin >> setPrice;
+
+		totalSetsEntered++;
+		totalCollectionValue = totalCollectionValue + setPrice;
+
+		// Display the information for the LEGO set just entered.
+		cout << endl;
+		cout << "LEGO Set Added!" << endl;
+		cout << "Set Name: " << setName << endl;
+		cout << "Set Number: " << setNumber << endl;
+		cout << fixed << setprecision(2);
+		cout << "Set Price : $" << setPrice << endl;
+
+		// Ask the user if they want to add another LEGO set
+		cout << endl;
+		cout << "Do you want to add another LEGO set? (Y/N): ";
+		cin >> addAnother;
+		cin.ignore(200, '\n'); // Clear the input buffer before the next iteration
+	} while (addAnother == 'Y' || addAnother == 'y');
+
+	// Calculate the average price of the LEGO sets entered.
+	if (totalSetsEntered > 0)
+	{
+		averageSetPrice = totalCollectionValue / totalSetsEntered;
+	}
+	
+	cout << endl;
+	cout << "====== LEGO COLLECTION STATISTICS ======" << endl;
+
+	for (int statistic = 1; statistic <= 3; statistic++)
+	{
+		// Display the statistics
+		if (statistic == 1)
+		{
+			cout << "Total Sets Entered: " << totalSetsEntered << endl;
+		}
+		else if (statistic == 2)
+		{
+			cout << "Total Collection Value: $" << totalCollectionValue << endl;
+		}
+		else if (statistic == 3)
+		{
+			cout << "Average Price Per Set: $" << averageSetPrice << endl;
+		}
+	}
+	
+	// Display the LEGO collection summary.
+	cout << endl;
+	cout << "========================================" << endl;
+	cout << "          COLLECTION SUMMARY" << endl;
+	cout << "========================================" << endl;
+	cout << "Total Sets Entered: " << totalSetsEntered << endl;
+	cout << "Total Collection Value: $" << totalCollectionValue << endl;
+	cout << "========================================" << endl;
 
 	// Calculate the total number of hours spent building LEGO sets per year.
 	hoursPerYear = hoursPerWeek * 52;
@@ -67,6 +143,12 @@ int main()
 	reportFile << left << setw(40) << "Average Hours Spent Building per Week" << right << setw(15) << hoursPerWeek << endl;
 
 	reportFile << left << setw(40) << "Total Hours Spent Building per Year" << right << setw(15) << hoursPerYear << endl;
+
+	reportFile << left << setw(40) << "Total LEGO Sets Entered" << right << setw(15) << totalSetsEntered << endl;
+
+	reportFile << left << setw(40) << "Total Collection Value" << right << setw(15) << totalCollectionValue << endl;
+
+	reportFile << left << setw(40) << "Average Price Per Set" << right << setw(15) << averageSetPrice << endl;
 
 	reportFile << "-------------------------------------------------------" << endl;
 
