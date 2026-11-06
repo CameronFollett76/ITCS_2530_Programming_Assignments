@@ -25,13 +25,26 @@ int main()
 	cout << "What is your favorite LEGO theme or building style? (e.g., Star Wars, City, Custom Creations, etc.)" << endl;
 	getline(cin, favoriteTheme);
 
+	// Input validation for favorite LEGO theme
+	while (favoriteTheme.empty())
+	{
+		cout << "Please enter a LEGO theme or building style." << endl;
+		getline(cin, favoriteTheme);
+	}
+
 	// Prompt the user for the number of LEGO sets they currently own.
 	cout << "How many LEGO sets do you currently own?" << endl;
 	cin >> setsOwned;
 
 	// Input validation for the number of LEGO sets owned
-	while (setsOwned < 0)
+	while (cin.fail() || setsOwned < 0)
 	{
+		if (cin.fail())
+		{
+			cin.clear();
+			cin.ignore(200, '\n');
+		}
+
 		cout << "Please enter a valid number of LEGO sets (0 or more)." << endl;
 		cin >> setsOwned;
 	}
@@ -41,8 +54,14 @@ int main()
 	cin >> hoursPerWeek;
 
 	// Validate input for Hours Per Week
-	while (hoursPerWeek < 0)
+	while (cin.fail() || hoursPerWeek < 0)
 	{
+		if (cin.fail())
+		{
+			cin.clear();
+			cin.ignore(200, '\n');
+		}
+
 		cout << "Please enter a valid number of Hours (0 or more)." << endl;
 		cin >> hoursPerWeek;
 	}
@@ -59,8 +78,34 @@ int main()
 		cout << "Enter the set number for " << setName << ": ";
 		cin >> setNumber;
 
+		// Input validation for LEGO set number (must be greater than 0)
+		while (cin.fail() || setNumber <= 0)
+		{
+			if (cin.fail())
+			{
+				cin.clear();
+				cin.ignore(200, '\n');
+			}
+
+			cout << "Please enter a valid LEGO set number (greater than 0): ";
+			cin >> setNumber;
+		}
+
 		cout << "Enter the price of " << setName << ": $";
 		cin >> setPrice;
+
+		// Input validation for LEGO set price (must be 0 or more)
+		while (cin.fail() || setPrice < 0)
+		{
+			if (cin.fail())
+			{
+				cin.clear();
+				cin.ignore(200, '\n');
+			}
+
+			cout << "Please enter a valid price (0 or more): $";
+			cin >> setPrice;
+		}
 
 		totalSetsEntered++;
 		totalCollectionValue = totalCollectionValue + setPrice;
@@ -122,37 +167,53 @@ int main()
 	ofstream reportFile("report.txt");
 
 	// Display the title for the report
+	cout << "==================================================" << endl;
+	cout << "             MY LEGO HOBBY PROFILE" << endl;
+	cout << "==================================================" << endl;
+
 	reportFile << "==================================================" << endl;
 	reportFile << "             MY LEGO HOBBY PROFILE" << endl;
 	reportFile << "==================================================" << endl;
 
 	// Display Column Headers
+	cout << endl;
+	cout << left << setw(40) << "Information" << right << setw(15) << "Your Answers" << endl;
+	cout << "-------------------------------------------------------" << endl;
+
 	reportFile << endl;
 	reportFile << left << setw(40) << "Information" << right << setw(15) << "Your Answers" << endl;
-
 	reportFile << "-------------------------------------------------------" << endl;
 
-	//Display the LEGO Hobby Profile information
-	reportFile << left << setw(40) << "Favorite LEGO Theme/Building Style" << right << setw(15) << favoriteTheme << endl;
-
-	reportFile << left << setw(40) << "Number of LEGO Sets Owned" << right << setw(15) << setsOwned << endl;
-
-	//Format the output to display two decimal places
+	// Format the output to display two decimal places
+	cout << fixed << setprecision(2);
 	reportFile << fixed << setprecision(2);
 
+	// Display the LEGO Hobby Profile information
+	cout << left << setw(40) << "Favorite LEGO Theme/Building Style" << right << setw(15) << favoriteTheme << endl;
+	reportFile << left << setw(40) << "Favorite LEGO Theme/Building Style" << right << setw(15) << favoriteTheme << endl;
+
+	cout << left << setw(40) << "Number of LEGO Sets Owned" << right << setw(15) << setsOwned << endl;
+	reportFile << left << setw(40) << "Number of LEGO Sets Owned" << right << setw(15) << setsOwned << endl;
+
+	cout << left << setw(40) << "Average Hours Spent Building per Week" << right << setw(15) << hoursPerWeek << endl;
 	reportFile << left << setw(40) << "Average Hours Spent Building per Week" << right << setw(15) << hoursPerWeek << endl;
 
+	cout << left << setw(40) << "Total Hours Spent Building per Year" << right << setw(15) << hoursPerYear << endl;
 	reportFile << left << setw(40) << "Total Hours Spent Building per Year" << right << setw(15) << hoursPerYear << endl;
 
+	cout << left << setw(40) << "Total LEGO Sets Entered" << right << setw(15) << totalSetsEntered << endl;
 	reportFile << left << setw(40) << "Total LEGO Sets Entered" << right << setw(15) << totalSetsEntered << endl;
 
+	cout << left << setw(40) << "Total Collection Value" << right << setw(15) << totalCollectionValue << endl;
 	reportFile << left << setw(40) << "Total Collection Value" << right << setw(15) << totalCollectionValue << endl;
 
+	cout << left << setw(40) << "Average Price Per Set" << right << setw(15) << averageSetPrice << endl;
 	reportFile << left << setw(40) << "Average Price Per Set" << right << setw(15) << averageSetPrice << endl;
 
+	cout << "-------------------------------------------------------" << endl;
 	reportFile << "-------------------------------------------------------" << endl;
 
-	// Close the report file.
+	// Close the report file
 	reportFile.close();
 
 	// Display the user options table
