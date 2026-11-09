@@ -2,7 +2,25 @@
 #include <string>
 #include <iomanip>
 #include <fstream>
+#include <windows.h>
 using namespace std;
+
+// Function Declarations
+void displayBanner();
+
+void collectInput(string& favoriteTheme, int& setsOwned, double& hoursPerWeek,char& addAnother, string& setName, 
+	int& setNumber, double& setPrice,int& totalSetsEntered, double& totalCollectionValue);
+
+void calculateStatistics(int totalSetsEntered, double totalCollectionValue, double hoursPerWeek, double& averageSetPrice, double& hoursPerYear);
+
+void displayStatistics(int totalSetsEntered, double totalCollectionValue, double averageSetPrice);
+
+int displayMenu(double hoursPerWeek, int setsOwned, double hoursPerYear);
+
+void saveReport(string favoriteTheme, int setsOwned, double hoursPerWeek, double hoursPerYear, int totalSetsEntered, double totalCollectionValue,
+	double averageSetPrice);
+
+void changeConsoleColor();
 
 int main()
 {
@@ -20,8 +38,50 @@ int main()
 	double totalCollectionValue = 0.0;
 	double averageSetPrice = 0.0;
 
-	// Prompt the user for their favorite LEGO theme or building style.
+	// Call color function to change color
+	changeConsoleColor();
+
+	// Call upon Welcome Banner Function
+	displayBanner();
+
+	// Collect user input & information
+	collectInput(favoriteTheme, setsOwned, hoursPerWeek, addAnother,setName, setNumber, setPrice, totalSetsEntered, totalCollectionValue);
+	// Calculate the average price of the LEGO sets entered.
+
+	// Calculate the collection statistics
+	calculateStatistics(totalSetsEntered, totalCollectionValue, hoursPerWeek, averageSetPrice, hoursPerYear);
+
+	// Display the statistics
+	displayStatistics(totalSetsEntered, totalCollectionValue, averageSetPrice);
+
+	// Display the LEGO collection summary.
+	cout << endl;
+	cout << "========================================" << endl;
+	cout << "          COLLECTION SUMMARY" << endl;
+	cout << "========================================" << endl;
+	cout << "Total Sets Entered: " << totalSetsEntered << endl;
+	cout << "Total Collection Value: $" << totalCollectionValue << endl;
+	cout << "========================================" << endl;
+
+	// Save and Display the report
+	saveReport(favoriteTheme, setsOwned, hoursPerWeek, hoursPerYear, totalSetsEntered, totalCollectionValue, averageSetPrice);
+
+	// Display Menu
+	menuChoice = displayMenu(hoursPerWeek, setsOwned, hoursPerYear);
+
+	return 0;
+}
+
+// Function Definitions
+void displayBanner()
+{
+	// Display the welcome banner for the LEGO Builder Profile
 	cout << "Welcome to the LEGO Builder Profile!" << endl;
+}
+
+void collectInput(string& favoriteTheme, int& setsOwned, double& hoursPerWeek,char& addAnother, string& setName, 
+	int& setNumber, double& setPrice,int& totalSetsEntered, double& totalCollectionValue)
+{
 	cout << "What is your favorite LEGO theme or building style? (e.g., Star Wars, City, Custom Creations, etc.)" << endl;
 	getline(cin, favoriteTheme);
 
@@ -124,13 +184,21 @@ int main()
 		cin >> addAnother;
 		cin.ignore(200, '\n'); // Clear the input buffer before the next iteration
 	} while (addAnother == 'Y' || addAnother == 'y');
+}
 
-	// Calculate the average price of the LEGO sets entered.
+void calculateStatistics(int totalSetsEntered, double totalCollectionValue,
+	double hoursPerWeek, double& averageSetPrice, double& hoursPerYear)
+{
 	if (totalSetsEntered > 0)
 	{
 		averageSetPrice = totalCollectionValue / totalSetsEntered;
 	}
-	
+
+	hoursPerYear = hoursPerWeek * 52;
+}
+
+void displayStatistics(int totalSetsEntered, double totalCollectionValue, double averageSetPrice)
+{
 	cout << endl;
 	cout << "====== LEGO COLLECTION STATISTICS ======" << endl;
 
@@ -150,18 +218,62 @@ int main()
 			cout << "Average Price Per Set: $" << averageSetPrice << endl;
 		}
 	}
-	
-	// Display the LEGO collection summary.
-	cout << endl;
-	cout << "========================================" << endl;
-	cout << "          COLLECTION SUMMARY" << endl;
-	cout << "========================================" << endl;
-	cout << "Total Sets Entered: " << totalSetsEntered << endl;
-	cout << "Total Collection Value: $" << totalCollectionValue << endl;
-	cout << "========================================" << endl;
+}
 
-	// Calculate the total number of hours spent building LEGO sets per year.
-	hoursPerYear = hoursPerWeek * 52;
+int displayMenu(double hoursPerWeek, int setsOwned, double hoursPerYear)
+{
+	int menuChoice;
+
+	// Display the user options table
+	cout << "==== LEGO Hobby Menu ====" << endl;
+	cout << "1. Where to find Your LEGO Hobby Profile" << endl;
+	cout << "2. What your building habits are!" << endl;
+	cout << "3. Thank you for using the LEGO Builder Profile!" << endl;
+	cout << "Please enter your choice (1, 2, or 3): ";
+	cin >> menuChoice;
+
+	// Switch statement to handle menu choices
+	switch (menuChoice)
+	{
+	case 1:
+		cout << "Your LEGO Profile has been saved to report.txt" << endl;
+		break;
+
+	case 2:
+		if (hoursPerWeek >= 5 && setsOwned >= 10)
+		{
+			cout << "You are a dedicated LEGO builder!" << endl;
+		}
+		else
+		{
+			cout << "You are a casual LEGO builder!" << endl;
+		}
+
+		if (hoursPerYear >= 260 && hoursPerWeek >= 5)
+		{
+			cout << "You spent a lot of time throughout the year building LEGO sets!" << endl;
+		}
+		else
+		{
+			cout << "You have plenty of room and time to grow your building time!" << endl;
+		}
+		break;
+
+	case 3:
+		cout << "Thank you for using the LEGO Builder Profile!" << endl;
+		break;
+
+	default:
+		cout << "Invalid choice. Please select 1, 2, or 3." << endl;
+	}
+
+	return menuChoice;
+
+}
+
+void saveReport(string favoriteTheme, int setsOwned, double hoursPerWeek, double hoursPerYear, int totalSetsEntered, double totalCollectionValue,
+	double averageSetPrice)
+{
 
 	//Output to a text file
 	ofstream reportFile("report.txt");
@@ -215,49 +327,12 @@ int main()
 
 	// Close the report file
 	reportFile.close();
+}
 
-	// Display the user options table
-	cout << "==== LEGO Hobby Menu ====" << endl;
-	cout << "1. Where to find Your LEGO Hobby Profile" << endl;
-	cout << "2. What your building habits are!" << endl;
-	cout << "3. Thank you for using the LEGO Builder Profile!" << endl;
-	cout << "Please enter your choice (1, 2, or 3): ";
-	cin >> menuChoice;
+void changeConsoleColor()
+{
+	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 
-	// Switch statement to handle menu choices
-	switch (menuChoice)
-	{
-	case 1:
-		cout << "Your LEGO Profile has been saved to report.txt" << endl;
-		break;
-
-	case 2:
-		if (hoursPerWeek >= 5 && setsOwned >= 10)
-		{
-			cout << "You are a dedicated LEGO builder!" << endl;
-		}
-		else
-		{
-			cout << "You are a casual LEGO builder!" << endl;
-		}
-
-		if (hoursPerYear >= 260 && hoursPerWeek >= 5)
-		{
-			cout << "You spent a lot of time throughout the year building LEGO sets!" << endl;
-		}
-		else
-		{
-			cout << "You have plenty of room and time to grow your building time!" << endl;
-		}
-		break;
-
-	case 3:
-		cout << "Thank you for using the LEGO Builder Profile!" << endl;
-		break;
-
-	default:
-		cout << "Invalid choice. Please select 1, 2, or 3." << endl;
-	}
-
-	return 0;
+	// Change the console text color
+	SetConsoleTextAttribute(hConsole, 11);
 }
