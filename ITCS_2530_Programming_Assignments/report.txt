@@ -5,10 +5,10 @@
 Information                                Your Answers
 -------------------------------------------------------
 Favorite LEGO Theme/Building Style                 City
-Number of LEGO Sets Owned                             3
-Average Hours Spent Building per Week              2.50
-Total Hours Spent Building per Year              130.00
-Total LEGO Sets Entered                               3
-Total Collection Value                           400.97
-Average Price Per Set                            133.66
+Number of LEGO Sets Owned                             2
+Average Hours Spent Building per Week              2.00
+Total Hours Spent Building per Year              104.00
+Total LEGO Sets Entered                               2
+Total Collection Value                           249.98
+Average Price Per Set                            124.99
 -------------------------------------------------------
