@@ -15,7 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Week 01 Programming Assignment.cpp">
+    <ClCompile Include="ITCS_2530_Lego_Program.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
