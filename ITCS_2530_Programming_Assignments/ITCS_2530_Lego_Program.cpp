@@ -5,20 +5,37 @@
 #include <windows.h>
 using namespace std;
 
+const int MAX_SETS = 50;
+
+enum BuilderTier
+{
+	BEGINNER = 1,
+	INTERMEDIATE,
+	ADVANCED
+};
+
 // Function Declarations
 void displayBanner();
 
-void collectInput(string& favoriteTheme, int& setsOwned, double& hoursPerWeek,char& addAnother, string& setName, 
-	int& setNumber, double& setPrice,int& totalSetsEntered, double& totalCollectionValue);
+void collectInput(string& favoriteTheme, int& setsOwned, double& hoursPerWeek, char& addAnother, string& setName,
+	int& setNumber, double& setPrice, int& totalSetsEntered, double& totalCollectionValue,
+	string setNames[], int setNumbers[], double setPrices[]);
 
 void calculateStatistics(int totalSetsEntered, double totalCollectionValue, double hoursPerWeek, double& averageSetPrice, double& hoursPerYear);
 
 void displayStatistics(int totalSetsEntered, double totalCollectionValue, double averageSetPrice);
 
-int displayMenu(double hoursPerWeek, int setsOwned, double hoursPerYear);
+BuilderTier determineBuilderTier(double hoursPerWeek, int setsOwned, double hoursPerYear);
+
+void displayTierRecommendation(BuilderTier tier, double hoursPerWeek, int setsOwned);
+
+int displayMenu(double hoursPerWeek, int setsOwned, double hoursPerYear,
+	string& favoriteTheme, char& addAnother, string& setName, int& setNumber, double& setPrice,
+	int& totalSetsEntered, double& totalCollectionValue, double& averageSetPrice,
+	string setNames[], int setNumbers[], double setPrices[]);
 
 void saveReport(string favoriteTheme, int setsOwned, double hoursPerWeek, double hoursPerYear, int totalSetsEntered, double totalCollectionValue,
-	double averageSetPrice);
+	double averageSetPrice, const string setNames[], const int setNumbers[], const double setPrices[]);
 
 void changeConsoleColor();
 
@@ -37,6 +54,9 @@ int main()
 	int totalSetsEntered = 0;
 	double totalCollectionValue = 0.0;
 	double averageSetPrice = 0.0;
+	string setNames[MAX_SETS];
+	int setNumbers[MAX_SETS];
+	double setPrices[MAX_SETS];
 
 	// Call color function to change color
 	changeConsoleColor();
@@ -45,7 +65,8 @@ int main()
 	displayBanner();
 
 	// Collect user input & information
-	collectInput(favoriteTheme, setsOwned, hoursPerWeek, addAnother,setName, setNumber, setPrice, totalSetsEntered, totalCollectionValue);
+	collectInput(favoriteTheme, setsOwned, hoursPerWeek, addAnother, setName, setNumber, setPrice, totalSetsEntered, totalCollectionValue,
+		setNames, setNumbers, setPrices);
 	// Calculate the average price of the LEGO sets entered.
 
 	// Calculate the collection statistics
@@ -64,10 +85,17 @@ int main()
 	cout << "========================================" << endl;
 
 	// Save and Display the report
-	saveReport(favoriteTheme, setsOwned, hoursPerWeek, hoursPerYear, totalSetsEntered, totalCollectionValue, averageSetPrice);
+	saveReport(favoriteTheme, setsOwned, hoursPerWeek, hoursPerYear, totalSetsEntered, totalCollectionValue, averageSetPrice,
+		setNames, setNumbers, setPrices);
 
 	// Display Menu
-	menuChoice = displayMenu(hoursPerWeek, setsOwned, hoursPerYear);
+	do
+	{
+		menuChoice = displayMenu(hoursPerWeek, setsOwned, hoursPerYear,
+			favoriteTheme, addAnother, setName, setNumber, setPrice,
+			totalSetsEntered, totalCollectionValue, averageSetPrice,
+			setNames, setNumbers, setPrices);
+	} while (menuChoice != 4);
 
 	return 0;
 }
@@ -79,61 +107,77 @@ void displayBanner()
 	cout << "Welcome to the LEGO Builder Profile!" << endl;
 }
 
-void collectInput(string& favoriteTheme, int& setsOwned, double& hoursPerWeek,char& addAnother, string& setName, 
-	int& setNumber, double& setPrice,int& totalSetsEntered, double& totalCollectionValue)
+void collectInput(string& favoriteTheme, int& setsOwned, double& hoursPerWeek, char& addAnother, string& setName,
+	int& setNumber, double& setPrice, int& totalSetsEntered, double& totalCollectionValue,
+	string setNames[], int setNumbers[], double setPrices[])
 {
-	cout << "What is your favorite LEGO theme or building style? (e.g., Star Wars, City, Custom Creations, etc.)" << endl;
-	getline(cin, favoriteTheme);
-
-	// Input validation for favorite LEGO theme
-	while (favoriteTheme.empty())
+	if (favoriteTheme.empty())
 	{
-		cout << "Please enter a LEGO theme or building style." << endl;
+		cout << "What is your favorite LEGO theme or building style? (e.g., Star Wars, City, Custom Creations, etc.)" << endl;
 		getline(cin, favoriteTheme);
-	}
 
-	// Prompt the user for the number of LEGO sets they currently own.
-	cout << "How many LEGO sets do you currently own?" << endl;
-	cin >> setsOwned;
-
-	// Input validation for the number of LEGO sets owned
-	while (cin.fail() || setsOwned < 0)
-	{
-		if (cin.fail())
+		// Input validation for favorite LEGO theme
+		while (favoriteTheme.empty())
 		{
-			cin.clear();
-			cin.ignore(200, '\n');
+			cout << "Please enter a LEGO theme or building style." << endl;
+			getline(cin, favoriteTheme);
 		}
 
-		cout << "Please enter a valid number of LEGO sets (0 or more)." << endl;
+		// Prompt the user for the number of LEGO sets they currently own.
+		cout << "How many LEGO sets do you currently own?" << endl;
 		cin >> setsOwned;
-	}
 
-	// Prompt the user for the average number of hours they spend building LEGO sets per week.
-	cout << "On average, how many hours a week do you spend building LEGO sets?" << endl;
-	cin >> hoursPerWeek;
-
-	// Validate input for Hours Per Week
-	while (cin.fail() || hoursPerWeek < 0)
-	{
-		if (cin.fail())
+		// Input validation for the number of LEGO sets owned
+		while (cin.fail() || setsOwned < 0)
 		{
-			cin.clear();
-			cin.ignore(200, '\n');
+			if (cin.fail())
+			{
+				cin.clear();
+				cin.ignore(200, '\n');
+			}
+
+			cout << "Please enter a valid number of LEGO sets (0 or more)." << endl;
+			cin >> setsOwned;
 		}
 
-		cout << "Please enter a valid number of Hours (0 or more)." << endl;
+		// Prompt the user for the average number of hours they spend building LEGO sets per week.
+		cout << "On average, how many hours a week do you spend building LEGO sets?" << endl;
 		cin >> hoursPerWeek;
-	}
 
-	// Clear the input buffer before using getline for setName
-	cin.ignore(200, '\n');
+		// Validate input for Hours Per Week
+		while (cin.fail() || hoursPerWeek < 0)
+		{
+			if (cin.fail())
+			{
+				cin.clear();
+				cin.ignore(200, '\n');
+			}
+
+			cout << "Please enter a valid number of Hours (0 or more)." << endl;
+			cin >> hoursPerWeek;
+		}
+
+		// Clear the input buffer before using getline for setName
+		cin.ignore(200, '\n');
+	}
 
 	// Loop to allow the user to enter multiple LEGO sets
 	do
 	{
+		if (totalSetsEntered >= MAX_SETS)
+		{
+			cout << "Maximum session set capacity (" << MAX_SETS << ") reached." << endl;
+			break;
+		}
+
 		cout << "Enter the name of a LEGO set you own: ";
 		getline(cin, setName);
+
+		while (setName.empty())
+		{
+			cout << "Please enter a non-empty LEGO set name: ";
+			getline(cin, setName);
+		}
 
 		cout << "Enter the set number for " << setName << ": ";
 		cin >> setNumber;
@@ -167,6 +211,10 @@ void collectInput(string& favoriteTheme, int& setsOwned, double& hoursPerWeek,ch
 			cin >> setPrice;
 		}
 
+		setNames[totalSetsEntered] = setName;
+		setNumbers[totalSetsEntered] = setNumber;
+		setPrices[totalSetsEntered] = setPrice;
+
 		totalSetsEntered++;
 		totalCollectionValue = totalCollectionValue + setPrice;
 
@@ -183,7 +231,7 @@ void collectInput(string& favoriteTheme, int& setsOwned, double& hoursPerWeek,ch
 		cout << "Do you want to add another LEGO set? (Y/N): ";
 		cin >> addAnother;
 		cin.ignore(200, '\n'); // Clear the input buffer before the next iteration
-	} while (addAnother == 'Y' || addAnother == 'y');
+	} while ((addAnother == 'Y' || addAnother == 'y') && totalSetsEntered < MAX_SETS);
 }
 
 void calculateStatistics(int totalSetsEntered, double totalCollectionValue,
@@ -220,17 +268,80 @@ void displayStatistics(int totalSetsEntered, double totalCollectionValue, double
 	}
 }
 
-int displayMenu(double hoursPerWeek, int setsOwned, double hoursPerYear)
+BuilderTier determineBuilderTier(double hoursPerWeek, int setsOwned, double hoursPerYear)
+{
+	if (hoursPerWeek >= 8.0 && setsOwned >= 25 && hoursPerYear >= 400.0)
+	{
+		return ADVANCED;
+	}
+	else if ((hoursPerWeek >= 5.0 && setsOwned >= 10) || hoursPerYear >= 260.0)
+	{
+		return INTERMEDIATE;
+	}
+	else
+	{
+		return BEGINNER;
+	}
+}
+
+void displayTierRecommendation(BuilderTier tier, double hoursPerWeek, int setsOwned)
+{
+	switch (tier)
+	{
+	case BEGINNER:
+		cout << "Recommended Level: Beginner" << endl;
+		if (hoursPerWeek < 3.0 || setsOwned < 5)
+		{
+			cout << "Recommendation: Aim for 2-3 building hours per week and start with smaller sets." << endl;
+		}
+		else
+		{
+			cout << "Recommendation: Maintain a steady weekly building schedule." << endl;
+		}
+		break;
+
+	case INTERMEDIATE:
+		cout << "Recommended Level: Intermediate" << endl;
+		cout << "Recommendation: Sort parts by element type and take on larger builds." << endl;
+		break;
+
+	case ADVANCED:
+		cout << "Recommended Level: Advanced" << endl;
+		cout << "Recommendation: Great stage for custom MOCs or modular display layouts." << endl;
+		break;
+
+	default:
+		cout << "Recommended Level: Beginner" << endl;
+		break;
+	}
+}
+
+int displayMenu(double hoursPerWeek, int setsOwned, double hoursPerYear,
+	string& favoriteTheme, char& addAnother, string& setName, int& setNumber, double& setPrice,
+	int& totalSetsEntered, double& totalCollectionValue, double& averageSetPrice,
+	string setNames[], int setNumbers[], double setPrices[])
 {
 	int menuChoice;
+	BuilderTier recommendedTier = determineBuilderTier(hoursPerWeek, setsOwned, hoursPerYear);
 
 	// Display the user options table
 	cout << "==== LEGO Hobby Menu ====" << endl;
 	cout << "1. Where to find Your LEGO Hobby Profile" << endl;
 	cout << "2. What your building habits are!" << endl;
-	cout << "3. Thank you for using the LEGO Builder Profile!" << endl;
-	cout << "Please enter your choice (1, 2, or 3): ";
+	cout << "3. Recommend Level & Add Another Set" << endl;
+	cout << "4. Thank you for using the LEGO Builder Profile!" << endl;
+	cout << "Please enter your choice (1-4): ";
 	cin >> menuChoice;
+
+	while (cin.fail())
+	{
+		cin.clear();
+		cin.ignore(200, '\n');
+		cout << "Please enter a valid menu number (1-4): ";
+		cin >> menuChoice;
+	}
+
+	cin.ignore(200, '\n');
 
 	// Switch statement to handle menu choices
 	switch (menuChoice)
@@ -260,11 +371,20 @@ int displayMenu(double hoursPerWeek, int setsOwned, double hoursPerYear)
 		break;
 
 	case 3:
+		displayTierRecommendation(recommendedTier, hoursPerWeek, setsOwned);
+		collectInput(favoriteTheme, setsOwned, hoursPerWeek, addAnother, setName, setNumber, setPrice,
+			totalSetsEntered, totalCollectionValue, setNames, setNumbers, setPrices);
+		calculateStatistics(totalSetsEntered, totalCollectionValue, hoursPerWeek, averageSetPrice, hoursPerYear);
+		saveReport(favoriteTheme, setsOwned, hoursPerWeek, hoursPerYear, totalSetsEntered, totalCollectionValue, averageSetPrice,
+			setNames, setNumbers, setPrices);
+		break;
+
+	case 4:
 		cout << "Thank you for using the LEGO Builder Profile!" << endl;
 		break;
 
 	default:
-		cout << "Invalid choice. Please select 1, 2, or 3." << endl;
+		cout << "Invalid choice. Please select 1, 2, 3, or 4." << endl;
 	}
 
 	return menuChoice;
@@ -272,7 +392,7 @@ int displayMenu(double hoursPerWeek, int setsOwned, double hoursPerYear)
 }
 
 void saveReport(string favoriteTheme, int setsOwned, double hoursPerWeek, double hoursPerYear, int totalSetsEntered, double totalCollectionValue,
-	double averageSetPrice)
+	double averageSetPrice, const string setNames[], const int setNumbers[], const double setPrices[])
 {
 
 	//Output to a text file
@@ -324,6 +444,26 @@ void saveReport(string favoriteTheme, int setsOwned, double hoursPerWeek, double
 
 	cout << "-------------------------------------------------------" << endl;
 	reportFile << "-------------------------------------------------------" << endl;
+
+	if (totalSetsEntered > 0)
+	{
+		cout << endl;
+		cout << left << setw(25) << "Set Name" << right << setw(12) << "Set #" << setw(18) << "Price" << endl;
+		cout << "-------------------------------------------------------" << endl;
+
+		reportFile << endl;
+		reportFile << left << setw(25) << "Set Name" << right << setw(12) << "Set #" << setw(18) << "Price" << endl;
+		reportFile << "-------------------------------------------------------" << endl;
+
+		for (int i = 0; i < totalSetsEntered; i++)
+		{
+			cout << left << setw(25) << setNames[i] << right << setw(12) << setNumbers[i] << setw(18) << setPrices[i] << endl;
+			reportFile << left << setw(25) << setNames[i] << right << setw(12) << setNumbers[i] << setw(18) << setPrices[i] << endl;
+		}
+
+		cout << "-------------------------------------------------------" << endl;
+		reportFile << "-------------------------------------------------------" << endl;
+	}
 
 	// Close the report file
 	reportFile.close();
